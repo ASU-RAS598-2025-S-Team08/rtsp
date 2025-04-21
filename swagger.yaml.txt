@@ -1,0 +1,60 @@
+openapi: 3.0.3
+info:
+  title: TurtleBot4 RTSP Streaming API
+  description: REST API to control RTSP stream for TurtleBot4 simulation or camera feed
+  version: 1.0.0
+servers:
+  - url: http://localhost:5000
+    description: Local Development Server
+
+paths:
+  /start_stream:
+    post:
+      summary: Start RTSP stream
+      operationId: startStream
+      responses:
+        '200':
+          description: Stream started or already running
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: started
+                  url:
+                    type: string
+                    example: rtsp://localhost:8554/sim
+
+  /stop_stream:
+    post:
+      summary: Stop RTSP stream
+      operationId: stopStream
+      responses:
+        '200':
+          description: Stream stopped or not running
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: stopped
+
+  /status:
+    get:
+      summary: Get stream status
+      operationId: getStatus
+      responses:
+        '200':
+          description: Current status of stream
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  running:
+                    type: boolean
+                    example: true

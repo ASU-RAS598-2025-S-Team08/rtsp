@@ -1,0 +1,47 @@
+# app.py
+from flask import Flask, jsonify
+from flask_cors import CORS
+from camera_streamer import start_rtsp_stream
+import threading
+
+app = Flask(__name__)
+CORS(app)
+
+stream_process = None
+
+@app.route("/start_stream", methods=["POST"])
+def start_stream():
+    global stream_process
+    if not stream_process:
+        stream_process = start_rtsp_stream()
+        return jsonify({"status": "started", "url": "rtsp://<your-ip>:8554/sim"})
+    return jsonify({"status": "already running"})
+
+@app.route("/stop_stream", methods=["POST"])
+def stop_stream():
+    global stream_process
+    if stream_process:
+        stream_process.terminate()
+        stream_process = None
+        return jsonify({"status": "stopped"})
+    return jsonify({"status": "not running"})
+
+@app.route("/status", methods=["GET"])
+def status():
+    global stream_process
+    return jsonify({"running": stream_process is not None})
+
+if __name__ == "__main__":
+    app.run(host="0.0.0.0", port=5000)
+
+from flask import Flask, request, jsonify
+from ros_navigation_bridge import send_nav_goal
+
+@app.route("/navigate", methods=["POST"])
+def navigate():
+    data = request.json
+    x = data.get("x")
+    y = data.get("y")
+    yaw = data.get("yaw", 0.0)
+    result = send_nav_goal(x, y, yaw)
+    return jsonify({"status": result})

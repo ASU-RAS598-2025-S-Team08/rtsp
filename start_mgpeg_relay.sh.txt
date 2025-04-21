@@ -1,0 +1,9 @@
+# relay/start_mjpeg_relay.sh
+#!/bin/bash
+
+# Set the RTSP stream URL
+RTSP_URL="rtsp://localhost:8554/sim"
+
+# Output MJPEG stream on port 8090
+ffmpeg -rtsp_transport tcp -i "$RTSP_URL" \
+  -f mjpeg -qscale 5 -r 20 http://localhost:8090/feed.mjpg

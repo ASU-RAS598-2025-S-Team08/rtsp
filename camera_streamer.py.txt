@@ -1,0 +1,15 @@
+# camera_streamer.py
+import subprocess
+
+def start_rtsp_stream(camera_index=0, port=8554, stream_name="sim"):
+    # This uses v4l2src for webcam. Replace with v4l2src or ROS source as needed
+    gst_cmd = [
+        "gst-launch-1.0", "v4l2src", f"device=/dev/video{camera_index}",
+        "!", "video/x-raw,width=640,height=480,framerate=30/1",
+        "!", "x264enc", "speed-preset=ultrafast", "tune=zerolatency",
+        "!", "rtph264pay", "config-interval=1", "pt=96",
+        "!", f"udpsink", f"host=127.0.0.1", f"port={port}"
+    ]
+
+    print("Starting GStreamer RTSP stream...")
+    return subprocess.Popen(gst_cmd)
